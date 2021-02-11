@@ -117,6 +117,17 @@ public final class EdgeViewerRegistry
    	}
    	
    	/**
+   	 * @param pEdge The edge to check. 
+   	 * @return The view category for this edge. Never null.
+   	 * @pre pEdge != null;
+   	 */
+   	public static EdgeViewCategory getViewCategory(Edge pEdge)
+   	{
+   		assert pEdge != null;
+   		return INSTANCE.viewerFor(pEdge).getViewCategory(pEdge);
+   	}
+   	
+   	/**
      * Draw selection handles around pEdge.
      * @param pEdge The target edge
      * @param pGraphics the graphics context

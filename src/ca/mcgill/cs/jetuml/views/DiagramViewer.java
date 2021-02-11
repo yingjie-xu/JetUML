@@ -21,7 +21,11 @@
 
 package ca.mcgill.cs.jetuml.views;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ca.mcgill.cs.jetuml.diagram.Diagram;
 import ca.mcgill.cs.jetuml.diagram.DiagramElement;
@@ -29,6 +33,7 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.Node;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.viewers.edges.EdgeViewCategory;
 import ca.mcgill.cs.jetuml.viewers.edges.EdgeViewerRegistry;
 import ca.mcgill.cs.jetuml.viewers.nodes.NodeViewerRegistry;
 import javafx.scene.canvas.GraphicsContext;
@@ -52,7 +57,19 @@ public class DiagramViewer
 	{
 		assert pDiagram != null && pGraphics != null;
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
-		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
+		
+		// Classifies edges by category, then draws them in a predictable order
+		Map<EdgeViewCategory, List<Edge>> edgesByCategory = 
+				pDiagram.edges().stream().collect(Collectors.groupingBy(edge -> EdgeViewerRegistry.getViewCategory(edge)));
+		
+		final List<Edge> empty = new ArrayList<>();
+		for( EdgeViewCategory category : EdgeViewCategory.values() )
+		{
+			edgesByCategory.getOrDefault(category, empty).forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
+		}
+		
+		// Previously the code was this
+		//pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
 	}
 	
 	private void drawNode(Node pNode, GraphicsContext pGraphics)

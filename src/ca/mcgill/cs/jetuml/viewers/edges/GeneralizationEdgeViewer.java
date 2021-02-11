@@ -20,6 +20,7 @@
  *******************************************************************************/
 package ca.mcgill.cs.jetuml.viewers.edges;
 
+import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.edges.GeneralizationEdge;
 import ca.mcgill.cs.jetuml.diagram.edges.GeneralizationEdge.Type;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
@@ -53,6 +54,20 @@ public final class GeneralizationEdgeViewer extends SegmentedEdgeViewer
 		else
 		{
 			return LineStyle.SOLID;
+		}
+	}
+
+	@Override
+	public EdgeViewCategory getViewCategory(Edge pEdge)
+	{
+		assert pEdge.getClass() == GeneralizationEdge.class;
+		if(((GeneralizationEdge) pEdge).getType() == GeneralizationEdge.Type.Inheritance)
+		{
+			return EdgeViewCategory.INHERITANCE;
+		}
+		else
+		{
+			return EdgeViewCategory.IMPLEMENTATION;
 		}
 	}
 }
