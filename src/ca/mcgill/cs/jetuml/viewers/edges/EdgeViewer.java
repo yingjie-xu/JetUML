@@ -83,4 +83,14 @@ public interface EdgeViewer
      * 
      */
    	Line getConnectionPoints(Edge pEdge);
+   	
+   	/**
+   	 * @param pEdge The edge to test.
+   	 * @return The view category for this edge. Never null.
+   	 * @pre pEdge != null
+   	 */
+   	default EdgeViewCategory getViewCategory(Edge pEdge)
+   	{
+   		return EdgeViewCategory.OTHER;
+   	}
 }
