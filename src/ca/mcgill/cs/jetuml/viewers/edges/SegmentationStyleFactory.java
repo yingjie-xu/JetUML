@@ -24,7 +24,9 @@ package ca.mcgill.cs.jetuml.viewers.edges;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.Node;
@@ -181,14 +183,14 @@ public final class SegmentationStyleFactory
 			Point start = NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), startSide.getDirection());
 			if( pEdge.getDiagram() != null )
 			{
-				start = computePointPosition(pEdge.getStart(), startSide, computePosition(pEdge, startSide, true));
+				start = computePointPosition(pEdge.getStart(), startSide, computePos(pEdge, startSide, true));
 			}
 			
 			Side endSide = getAttachedSide(pEdge, pEdge.getEnd());
 			Point end = NodeViewerRegistry.getConnectionPoints(pEdge.getEnd(), endSide.getDirection());
 			if( pEdge.getDiagram() != null )
 			{
-				end = computePointPosition(pEdge.getEnd(), endSide, computePosition(pEdge, endSide, false));
+				end = computePointPosition(pEdge.getEnd(), endSide, computePos(pEdge, endSide, false));
 			}
 			
 		    return new Point2D[] {Conversions.toPoint2D(start), Conversions.toPoint2D(end) };
@@ -220,6 +222,32 @@ public final class SegmentationStyleFactory
 				double increment = (NodeViewerRegistry.getBounds(pNode).getWidth() - MARGIN) / (pPosition.aTotal+1);
 				xPosition = NodeViewerRegistry.getBounds(pNode).getX() + pPosition.getIndex() * increment;
 			}
+			return new Point( (int) Math.round(xPosition), start.getY());
+		}
+	}
+	
+	private static Point computePointPosition(Node pNode, Side pSide, Pos pPos)
+	{
+		assert pNode != null && pSide != null && pPos != null && pNode.getDiagram().isPresent();
+		Point start = NodeViewerRegistry.getConnectionPoints(pNode, pSide.getDirection());
+		if( pSide.isEastWest() )
+		{
+			double yPosition = start.getY()+ pPos.computeNudge(NodeViewerRegistry.getBounds(pNode).getHeight()); // Default
+//			if( hasSelfEdge(pNode) && pSide == Side.EAST )
+//			{
+//				double increment = (NodeViewerRegistry.getBounds(pNode).getHeight() - MARGIN) / (pPos.aTotal+1);
+//				yPosition = NodeViewerRegistry.getBounds(pNode).getY() + MARGIN + pPos.getIndex() * increment;
+//			}
+			return new Point( start.getX(), (int) Math.round(yPosition));	
+		}
+		else
+		{
+			double xPosition = start.getX()+ pPos.computeNudge(NodeViewerRegistry.getBounds(pNode).getWidth());
+//			if( hasSelfEdge(pNode) && pSide == Side.NORTH )
+//			{
+//				double increment = (NodeViewerRegistry.getBounds(pNode).getWidth() - MARGIN) / (pPos.aTotal+1);
+//				xPosition = NodeViewerRegistry.getBounds(pNode).getX() + pPos.getIndex() * increment;
+//			}
 			return new Point( (int) Math.round(xPosition), start.getY());
 		}
 	}
@@ -284,6 +312,103 @@ public final class SegmentationStyleFactory
 			}
 		}
 		return new Position(index + 1, finalPositions.size());
+	}
+	
+	private static Pos computePos(Edge pEdge, Side pStartSide, boolean pForward)
+	{
+		assert pEdge != null && pStartSide != null && pEdge.getDiagram() != null;
+		Node tempTarget = pEdge.getStart();
+		if( !pForward )
+		{
+			tempTarget = pEdge.getEnd();
+		}
+		final Node target = tempTarget;
+		List<Edge> edgesOnSelectedSide = getAllEdgesForSide(target, pStartSide);
+		
+		// sort by position
+		sortPositions(edgesOnSelectedSide, target, pStartSide);
+		
+		// group by category
+		// Classifies edges by category, then draws them in a predictable order
+		Map<EdgeViewCategory, List<Edge>> edgesByCategory = 
+				edgesOnSelectedSide.stream().collect(Collectors.groupingBy(edge -> EdgeViewerRegistry.getViewCategory(edge)));
+				
+		final List<Edge> empty = new ArrayList<>();
+		int leftIndex = 0;
+		int rightIndex = 0;
+		int resIndex = -1;
+		boolean isLeft = false;
+		for( EdgeViewCategory category : EdgeViewCategory.values() )
+		{
+			List<Edge> edges = edgesByCategory.getOrDefault(category, empty);
+			if (edges.size() == 0) 
+			{
+				continue;
+			}
+			boolean leftIndexUsed = false;
+			boolean rightIndexUsed = false;
+			for (Edge edge : edges)
+			{
+				Node tempEnd = edge.getEnd();
+				if (tempEnd == target) 
+				{
+					tempEnd = edge.getStart();
+				}
+				final Node end = tempEnd;
+				if (leftIndex == 0)
+				{
+					leftIndexUsed = true;
+					rightIndexUsed = true;
+					if (edge == pEdge) 
+					{
+						resIndex = 0;
+						isLeft = true;
+					}
+				} 
+				else if (onNorthOrEast(target, end, pStartSide))
+				{
+					leftIndexUsed = true;
+					if (edge == pEdge) 
+					{
+						resIndex = leftIndex;
+						isLeft = true;
+					}
+				}
+				else 
+				{
+					rightIndexUsed = true;
+					if (edge == pEdge) 
+					{
+						resIndex = rightIndex;
+						isLeft = false;
+					}
+				}
+			}
+			if (leftIndexUsed) 
+			{
+				leftIndex++;
+			}
+			if (rightIndexUsed)
+			{
+				rightIndex++;
+			}
+		}
+		return new Pos(resIndex, isLeft);
+	}
+	
+	private static boolean onNorthOrEast(Node pTarget, Node pEnd, Side pSide) 
+	{
+		if( pSide.isEastWest() )
+		{		
+			
+			return NodeViewerRegistry.getBounds(pTarget).getCenter().getY() > 
+					NodeViewerRegistry.getBounds(pEnd).getCenter().getY();
+		}
+		else
+		{
+			return NodeViewerRegistry.getBounds(pTarget).getCenter().getX() > 
+					NodeViewerRegistry.getBounds(pEnd).getCenter().getX();
+		}
 	}
 	
 	// CSOFF:
@@ -517,9 +642,9 @@ public final class SegmentationStyleFactory
 						
 			if( pEdge.getDiagram() != null )
 			{
-				start = computePointPosition(pEdge.getStart(), startSide, computePosition(pEdge, startSide, true));
+				start = computePointPosition(pEdge.getStart(), startSide, computePos(pEdge, startSide, true));
 				end = computePointPosition(pEdge.getEnd(), startSide.flip(), 
-						computePosition(pEdge, startSide.flip(), false));
+						computePos(pEdge, startSide.flip(), false));
 			}
 			
 	  		if(Math.abs(start.getY() - end.getY()) <= MIN_SEGMENT)
@@ -655,9 +780,9 @@ public final class SegmentationStyleFactory
 			
 			if( pEdge.getDiagram() != null )
 			{
-				start = computePointPosition(pEdge.getStart(), startSide, computePosition(pEdge, startSide, true));
+				start = computePointPosition(pEdge.getStart(), startSide, computePos(pEdge, startSide, true));
 				end = computePointPosition(pEdge.getEnd(), startSide.flip(), 
-						computePosition(pEdge, startSide.flip(), false));
+						computePos(pEdge, startSide.flip(), false));
 			}
 			
 	  		if(Math.abs(start.getX() - end.getX()) <= MIN_SEGMENT)
@@ -717,6 +842,33 @@ public final class SegmentationStyleFactory
 		{
 			return aIndex + " of " + aTotal;
 		}
+	}
+	
+	private static class Pos
+	{
+		private int aIndex;
+		private boolean aIsLeft;
+		
+		Pos( int pIndex, boolean pIsLeft ) 
+		{
+			aIndex = pIndex;
+			aIsLeft = pIsLeft;
+		}
+		
+		double computeNudge(double pMaxWidth)
+		{
+			double increment = MAX_NUDGE;
+			increment *= aIndex;
+			if (aIsLeft) 
+			{
+				return -increment;
+			}
+			else 
+			{
+				return increment;
+			}
+		}
+		
 	}
 }
 
