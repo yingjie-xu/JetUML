@@ -62,17 +62,17 @@ public class DiagramViewer
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
 		
 		// Classifies edges by category, then draws them in a predictable order
-//		Map<EdgeViewCategory, List<Edge>> edgesByCategory = 
-//				pDiagram.edges().stream().collect(Collectors.groupingBy(edge -> EdgeViewerRegistry.getViewCategory(edge)));
-//		
-//		final List<Edge> empty = new ArrayList<>();
-//		for( EdgeViewCategory category : EdgeViewCategory.values() )
-//		{
-//			edgesByCategory.getOrDefault(category, empty).forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
-//		}
+		Map<EdgeViewCategory, List<Edge>> edgesByCategory = 
+				pDiagram.edges().stream().collect(Collectors.groupingBy(edge -> EdgeViewerRegistry.getViewCategory(edge)));
 		
-//		 Previously the code was this
-		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
+		final List<Edge> empty = new ArrayList<>();
+		for( EdgeViewCategory category : EdgeViewCategory.values() )
+		{
+			edgesByCategory.getOrDefault(category, empty).forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
+		}
+		
+		// Previously the code was this
+		//pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
 	}
 	
 	protected void drawNode(Node pNode, GraphicsContext pGraphics)
