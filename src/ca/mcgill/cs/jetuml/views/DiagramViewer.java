@@ -56,7 +56,7 @@ public class DiagramViewer
 	 * @param pDiagram the diagram to draw.
 	 * @pre pDiagram != null && pGraphics != null.
 	 */
-	public final void draw(Diagram pDiagram, GraphicsContext pGraphics)
+	public void draw(Diagram pDiagram, GraphicsContext pGraphics)
 	{
 		assert pDiagram != null && pGraphics != null;
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
@@ -75,7 +75,7 @@ public class DiagramViewer
 		//pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
 	}
 	
-	private void drawNode(Node pNode, GraphicsContext pGraphics)
+	protected void drawNode(Node pNode, GraphicsContext pGraphics)
 	{
 		NodeViewerRegistry.draw(pNode, pGraphics);
 		pNode.getChildren().forEach(node -> drawNode(node, pGraphics));
