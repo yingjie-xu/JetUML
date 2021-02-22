@@ -33,6 +33,7 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.Node;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgeLayout;
 import ca.mcgill.cs.jetuml.viewers.edges.EdgeViewCategory;
 import ca.mcgill.cs.jetuml.viewers.edges.EdgeViewerRegistry;
 import ca.mcgill.cs.jetuml.viewers.nodes.NodeViewerRegistry;
@@ -41,10 +42,12 @@ import javafx.scene.canvas.GraphicsContext;
 /**
  * A strategy for drawing a diagram and computing geometric properties of a 
  * diagram. This class can be inherited if certain diagram types require specialized 
- * services. This class is stateless.
+ * services. 
  */
 public class DiagramViewer
 {
+	protected final EdgeLayout aEdgeLayout = new EdgeLayout();
+	
 	/**
 	 * Draws pDiagram onto pGraphics.
 	 * 
