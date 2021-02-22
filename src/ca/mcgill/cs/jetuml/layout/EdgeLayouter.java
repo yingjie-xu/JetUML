@@ -5,5 +5,5 @@ import javafx.scene.canvas.GraphicsContext;
 
 public interface EdgeLayouter
 {
-	EdgeLayout layOut(Diagram pDiagram, GraphicsContext pGraphics);
+	void layOut(EdgeLayout pLayout, Diagram pDiagram, GraphicsContext pGraphics);
 }

@@ -22,7 +22,6 @@
 package ca.mcgill.cs.jetuml.views;
 
 import ca.mcgill.cs.jetuml.diagram.Diagram;
-import ca.mcgill.cs.jetuml.layout.EdgeLayout;
 import ca.mcgill.cs.jetuml.layout.EdgeLayouter;
 import ca.mcgill.cs.jetuml.layout.UseCaseDiagramEdgeLayouter;
 import ca.mcgill.cs.jetuml.viewers.edges.EdgeViewerRegistry;
@@ -41,7 +40,7 @@ public class UseCaseDiagramViewer extends DiagramViewer
 		assert pDiagram != null && pGraphics != null;
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
 		
-		EdgeLayout layout = LAYOUTER.layOut(pDiagram, pGraphics);
+		LAYOUTER.layOut(aEdgeLayout, pDiagram, pGraphics);
 		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
 	}
 }
