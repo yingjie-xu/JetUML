@@ -24,6 +24,7 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgePath;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -49,6 +50,15 @@ public interface EdgeViewer
      * @pre pEdge != null
 	 */
    	void draw(Edge pEdge, GraphicsContext pGraphics);
+
+   	/**
+     * Draws pEdge with precalculated pEdgePath.
+     * @param pEdge The edge to draw.
+     * @param pEdgePath The edge path to draw.
+     * @param pGraphics the graphics context
+     * @pre pEdge != null
+	 */
+	void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics);
    	
    	/**
    	 * Returns an icon that represents pEdge.

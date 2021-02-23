@@ -34,6 +34,7 @@ import ca.mcgill.cs.jetuml.diagram.builder.StateDiagramBuilder;
 import ca.mcgill.cs.jetuml.diagram.builder.UseCaseDiagramBuilder;
 import ca.mcgill.cs.jetuml.views.DiagramViewer;
 import ca.mcgill.cs.jetuml.views.SequenceDiagramViewer;
+import ca.mcgill.cs.jetuml.views.UseCaseDiagramViewer;
 
 /**
  * The different types of UML diagrams supported by 
@@ -102,7 +103,7 @@ public enum DiagramType
 			"UseCaseDiagram",
 			".usecase",
 			UseCaseDiagramBuilder::new, 
-			new DiagramViewer(),
+			new UseCaseDiagramViewer(),
 			new DiagramElement[]{
 					Prototypes.ACTOR, 
 					Prototypes.USE_CASE, 

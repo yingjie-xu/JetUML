@@ -41,6 +41,6 @@ public class UseCaseDiagramViewer extends DiagramViewer
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
 		
 		LAYOUTER.layOut(aEdgeLayout, pDiagram, pGraphics);
-		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, pGraphics));
+		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, aEdgeLayout.get(edge), pGraphics));
 	}
 }

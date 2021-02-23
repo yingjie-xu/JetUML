@@ -23,4 +23,20 @@ public class EdgePath
 		assert pPoints.length > 1;
 		aPoints = Arrays.asList(pPoints);
 	}
+	
+	/**
+	 * @return start point of the path
+	 */
+	public Point getStart()
+	{
+		return aPoints.get(0);
+	}
+	
+	/**
+	 * @return end point of the path
+	 */
+	public Point getEnd()
+	{
+		return aPoints.get(aPoints.size()-1);
+	}
 }

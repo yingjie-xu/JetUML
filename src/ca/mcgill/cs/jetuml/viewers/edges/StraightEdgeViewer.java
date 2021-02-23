@@ -25,6 +25,7 @@ import ca.mcgill.cs.jetuml.geom.Conversions;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
 import ca.mcgill.cs.jetuml.views.LineStyle;
 import ca.mcgill.cs.jetuml.views.ToolGraphics;
@@ -64,6 +65,14 @@ public class StraightEdgeViewer extends AbstractEdgeViewer
 		ToolGraphics.strokeSharpPath(pGraphics, shape, aLineStyle);
 		Line connectionPoints = getConnectionPoints(pEdge);
 		aArrowHead.view().draw(pGraphics, connectionPoints.getPoint1(), connectionPoints.getPoint2());
+	}
+	
+	@Override
+	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
+	{
+		Path shape = (Path) getShape(pEdge);
+		ToolGraphics.strokeSharpPath(pGraphics, shape, aLineStyle);
+		aArrowHead.view().draw(pGraphics, pEdgePath.getStart(), pEdgePath.getEnd());
 	}
 	
 	@Override

@@ -28,6 +28,7 @@ import ca.mcgill.cs.jetuml.geom.Direction;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.viewers.nodes.NodeViewerRegistry;
 import ca.mcgill.cs.jetuml.views.FontMetrics;
 import ca.mcgill.cs.jetuml.views.ToolGraphics;
@@ -49,6 +50,13 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	private static final FontMetrics SIZE_TESTER = new FontMetrics(FONT);
 	
 	private static final int DEGREES_180 = 180;
+	
+	@Override
+	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
+	{
+		// TODO: this method should eventually be removed in the future
+		draw(pEdge, pGraphics);
+	}
 	
 	/**
 	 * The default behavior is to draw a straight line between

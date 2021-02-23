@@ -26,6 +26,7 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.geom.Dimension;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
 import ca.mcgill.cs.jetuml.views.LineStyle;
 import ca.mcgill.cs.jetuml.views.StringViewer;
@@ -59,6 +60,17 @@ public class LabeledStraightEdgeViewer extends StraightEdgeViewer
 	public void draw(Edge pEdge, GraphicsContext pGraphics)
 	{
 		super.draw(pEdge, pGraphics);
+		String label = aLabelExtractor.apply(pEdge);
+		if( label.length() > 0 )
+		{
+			STRING_VIEWER.draw(label, pGraphics, getConnectionPoints(pEdge).spanning().translated(0, SHIFT));
+		}
+	}
+	
+	@Override
+	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
+	{
+		super.draw(pEdge, pEdgePath, pGraphics);
 		String label = aLabelExtractor.apply(pEdge);
 		if( label.length() > 0 )
 		{

@@ -21,4 +21,9 @@ public class EdgeLayout
 	{
 		aPaths.put(pEdge, pPath);
 	}
+	
+	public EdgePath get(Edge pEdge)
+	{
+		return aPaths.get(pEdge);
+	}
 }
