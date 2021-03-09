@@ -21,7 +21,13 @@
 
 package ca.mcgill.cs.jetuml.views;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ca.mcgill.cs.jetuml.diagram.Diagram;
+import ca.mcgill.cs.jetuml.diagram.Edge;
+import ca.mcgill.cs.jetuml.geom.Point;
+import ca.mcgill.cs.jetuml.geom.Rectangle;
 import ca.mcgill.cs.jetuml.layout.EdgeLayouter;
 import ca.mcgill.cs.jetuml.layout.UseCaseDiagramEdgeLayouter;
 import ca.mcgill.cs.jetuml.viewers.edges.EdgeViewerRegistry;
@@ -33,6 +39,7 @@ import javafx.scene.canvas.GraphicsContext;
 public class UseCaseDiagramViewer extends DiagramViewer
 {
 	private static final EdgeLayouter LAYOUTER = new UseCaseDiagramEdgeLayouter();
+	private static final Map<Edge, Rectangle> BOUND_CACHE = new HashMap<>();
 	
 	@Override
 	public final void draw(Diagram pDiagram, GraphicsContext pGraphics)
@@ -42,5 +49,29 @@ public class UseCaseDiagramViewer extends DiagramViewer
 		
 		LAYOUTER.layOut(aEdgeLayout, pDiagram, pGraphics);
 		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, aEdgeLayout.get(edge), pGraphics));
+		
+		BOUND_CACHE.clear();
+		pDiagram.edges().forEach(edge -> BOUND_CACHE.put(edge, EdgeViewerRegistry.getBounds(edge)));
 	}
+	
+	/**
+	 * get the bounds from precalculated cache.
+	 * @param pEdge edge to get the bound
+	 * @return Rectangle bound
+	 */
+	public static Rectangle getBounds(Edge pEdge)
+	{
+		return BOUND_CACHE.get(pEdge);
+	}
+	
+	public static boolean contains(Edge pEdge, Point pPoint)
+	{
+		return EdgeViewerRegistry.contains(pEdge, pPoint);
+	}
+	
+	public static void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
+   	{
+		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics);
+   	}
+	
 }
