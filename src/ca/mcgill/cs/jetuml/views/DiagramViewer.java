@@ -219,4 +219,22 @@ public class DiagramViewer
 		}
 		return false;
 	}
+	
+	// CSOFF:
+	// Methods below should eventually be abstract methods in the future when all the 
+	// diagrams have their own diagram viewer. This class should also be abstract eventually.
+	public Rectangle getBounds(Edge pEdge)
+	{
+		return null;
+	}
+	
+	public boolean contains(Edge pEdge, Point pPoint)
+	{
+		return false;
+	}
+	
+	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
+   	{
+		// do nothing
+   	} //CSON:
 }

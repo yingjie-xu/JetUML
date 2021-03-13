@@ -59,17 +59,32 @@ public class UseCaseDiagramViewer extends DiagramViewer
 	 * @param pEdge edge to get the bound
 	 * @return Rectangle bound
 	 */
-	public static Rectangle getBounds(Edge pEdge)
+	@Override
+	public Rectangle getBounds(Edge pEdge)
 	{
 		return BOUND_CACHE.get(pEdge);
 	}
 	
-	public static boolean contains(Edge pEdge, Point pPoint)
+	/**
+     * Tests whether pEdge contains a point.
+     * @param pEdge the edge to test
+     * @param pPoint the point to test
+     * @return true if this element contains aPoint
+     */
+	@Override
+	public boolean contains(Edge pEdge, Point pPoint)
 	{
 		return EdgeViewerRegistry.contains(pEdge, pPoint);
 	}
 	
-	public static void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
+	/**
+     * Draw selection handles around pEdge.
+     * @param pEdge The target edge
+     * @param pGraphics the graphics context
+     * @pre pEdge != null && pGraphics != null
+	 */
+	@Override
+	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
    	{
 		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics);
    	}
