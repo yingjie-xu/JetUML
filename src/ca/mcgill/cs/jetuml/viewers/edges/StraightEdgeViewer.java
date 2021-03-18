@@ -89,6 +89,18 @@ public class StraightEdgeViewer extends AbstractEdgeViewer
 	}
 	
 	@Override
+	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
+	{
+		Rectangle bounds = super.getBounds(pEdge, pEdgePath);
+		if( aArrowHead != ArrowHead.NONE )
+		{
+			bounds = bounds.add(Conversions.toRectangle(aArrowHead.view().getPath(pEdgePath.getStart(), 
+					pEdgePath.getEnd()).getBoundsInLocal()));
+		}
+		return bounds;
+	}
+	
+	@Override
 	public Canvas createIcon(Edge pEdge)
 	{
 		Canvas canvas = new Canvas(BUTTON_SIZE, BUTTON_SIZE);

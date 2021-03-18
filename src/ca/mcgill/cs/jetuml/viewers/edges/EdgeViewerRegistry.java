@@ -95,6 +95,11 @@ public final class EdgeViewerRegistry
 		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint);
 	}
 	
+	public static boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
+	{
+		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint, pEdgePath);
+	}
+	
   	/**
    	 * Returns an icon that represents pEdge.
    	 * @param pEdge The edge for which we need an icon.
@@ -161,6 +166,11 @@ public final class EdgeViewerRegistry
 	public static Rectangle getBounds(Edge pEdge)
 	{
 		return INSTANCE.viewerFor(pEdge).getBounds(pEdge);
+	}
+	
+	public static Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
+	{
+		return INSTANCE.viewerFor(pEdge).getBounds(pEdge, pEdgePath);
 	}
 	
   	/**

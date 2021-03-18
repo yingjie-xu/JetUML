@@ -43,6 +43,8 @@ public interface EdgeViewer
    	 */
 	Rectangle getBounds(Edge pEdge);
 	
+	Rectangle getBounds(Edge pEdge, EdgePath pEdgePath);
+	
 	/**
      * Draws pEdge.
      * @param pEdge The edge to draw.
@@ -83,6 +85,8 @@ public interface EdgeViewer
      * @return true if this element contains aPoint
      */
    	boolean contains(Edge pEdge, Point pPoint);
+   	
+   	boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath);
    	
    	/**
      * Gets the points at which pEdge is connected to

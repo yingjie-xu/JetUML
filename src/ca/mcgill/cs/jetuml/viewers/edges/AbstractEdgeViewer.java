@@ -102,10 +102,29 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	}
 	
 	@Override
+	public boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
+	{
+		if(pPoint.distance(pEdgePath.getStart()) <= MAX_DISTANCE || pPoint.distance(pEdgePath.getEnd()) <= MAX_DISTANCE)
+		{
+			return false;
+		}
+
+		Shape fatPath = getShape(pEdge);
+		fatPath.setStrokeWidth(2 * MAX_DISTANCE);
+		return fatPath.contains(pPoint.getX(), pPoint.getY());
+	}
+	
+	@Override
 	public Rectangle getBounds(Edge pEdge)
 	{
 		Bounds bounds = getShape(pEdge).getBoundsInLocal();
 		return new Rectangle((int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getWidth(), (int)bounds.getHeight());
+	}
+	
+	@Override
+	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath) 
+	{
+		return getBounds(pEdge);
 	}
 	
 	/*
