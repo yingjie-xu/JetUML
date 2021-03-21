@@ -107,7 +107,7 @@ public class DiagramCanvas extends Canvas implements SelectionObserver, BooleanP
 		}
 		DiagramType.viewerFor(aDiagram).draw(aDiagram, context);
 		aController.synchronizeSelectionModel();
-		aController.getSelectionModel().forEach( selected -> ViewerUtilities.drawSelectionHandles(selected, context));
+		aController.getSelectionModel().forEach( selected -> ViewerUtilities.drawSelectionHandles(selected, context, aDiagram));
 		aController.getSelectionModel().getRubberband().ifPresent( rubberband -> ToolGraphics.drawRubberband(context, rubberband));
 		aController.getSelectionModel().getLasso().ifPresent( lasso -> ToolGraphics.drawLasso(context, lasso));
 	}

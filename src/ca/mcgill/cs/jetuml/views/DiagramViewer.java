@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import ca.mcgill.cs.jetuml.diagram.Diagram;
 import ca.mcgill.cs.jetuml.diagram.DiagramElement;
+import ca.mcgill.cs.jetuml.diagram.DiagramType;
 import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.Node;
 import ca.mcgill.cs.jetuml.geom.Point;
@@ -95,7 +96,7 @@ public class DiagramViewer
 		assert pDiagram != null && pPoint != null;
 		for(Edge edge : pDiagram.edges())
 		{
-			if(EdgeViewerRegistry.contains(edge, pPoint))
+			if(DiagramType.viewerFor(pDiagram).contains(edge, pPoint))
 			{
 				return Optional.of(edge);
 			}
@@ -230,11 +231,11 @@ public class DiagramViewer
 	
 	public boolean contains(Edge pEdge, Point pPoint)
 	{
-		return false;
+		return EdgeViewerRegistry.contains(pEdge, pPoint);
 	}
 	
 	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
    	{
-		// do nothing
+		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics);
    	} //CSON:
 }

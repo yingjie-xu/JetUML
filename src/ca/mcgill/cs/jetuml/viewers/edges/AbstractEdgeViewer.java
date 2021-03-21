@@ -151,4 +151,10 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	{
 		ToolGraphics.drawHandles(pGraphics, getConnectionPoints(pEdge));		
 	}
+	
+	@Override
+	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+	{
+		drawSelectionHandles(pEdge, pGraphics);		
+	}
 }

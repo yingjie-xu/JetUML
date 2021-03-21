@@ -20,7 +20,9 @@
  *******************************************************************************/
 package ca.mcgill.cs.jetuml.views;
 
+import ca.mcgill.cs.jetuml.diagram.Diagram;
 import ca.mcgill.cs.jetuml.diagram.DiagramElement;
+import ca.mcgill.cs.jetuml.diagram.DiagramType;
 import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.Node;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
@@ -41,9 +43,10 @@ public final class ViewerUtilities
 	 * 
 	 * @param pElement The diagram element to select.
 	 * @param pContext The graphics context.
+	 * @param pDiagram The diagram
 	 * @pre pElement != null && pContext != null
 	 */
-	public static void drawSelectionHandles(DiagramElement pElement, GraphicsContext pContext)
+	public static void drawSelectionHandles(DiagramElement pElement, GraphicsContext pContext, Diagram pDiagram)
 	{
 		assert pElement != null && pContext != null;
 		if( pElement instanceof Node )
@@ -53,7 +56,7 @@ public final class ViewerUtilities
 		else
 		{
 			assert pElement instanceof Edge;
-			EdgeViewerRegistry.drawSelectionHandles((Edge)pElement, pContext);
+			DiagramType.viewerFor(pDiagram).drawSelectionHandles((Edge)pElement, pContext);
 		}
 	}
 	

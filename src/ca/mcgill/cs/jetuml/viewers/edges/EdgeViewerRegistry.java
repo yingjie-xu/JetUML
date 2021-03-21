@@ -156,6 +156,11 @@ public final class EdgeViewerRegistry
    		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics);
    	}
    	
+   	public static void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+   	{
+   		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics, pEdgePath);
+   	}
+   	
 	/**
      * Gets the smallest rectangle that bounds pEdge.
      * The bounding rectangle contains all labels.

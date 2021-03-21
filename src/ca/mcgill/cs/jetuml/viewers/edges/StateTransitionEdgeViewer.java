@@ -26,11 +26,10 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.diagram.edges.StateTransitionEdge;
 import ca.mcgill.cs.jetuml.geom.Conversions;
 import ca.mcgill.cs.jetuml.geom.Dimension;
-import ca.mcgill.cs.jetuml.geom.Direction;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
-import ca.mcgill.cs.jetuml.viewers.nodes.NodeViewerRegistry;
+import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
 import ca.mcgill.cs.jetuml.views.LineStyle;
 import ca.mcgill.cs.jetuml.views.ToolGraphics;
@@ -55,7 +54,6 @@ import javafx.scene.text.TextAlignment;
 public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 {
 	private static final int SELF_EDGE_OFFSET = 15;
-	private static final int DEGREES_5 = 5;
 	private static final int DEGREES_10 = 10;
 	private static final int DEGREES_20 = 20;
 	private static final int DEGREES_270 = 270;
@@ -71,42 +69,121 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	private static final int VERTICAL_TOLERANCE = 20; 
 
 	private Font aFont = FONT;
-	
+
 	@Override
 	public void draw(Edge pEdge, GraphicsContext pGraphics)
+	{
+		// not used any more
+	}
+	
+	@Override
+	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
 	{
 		if(isSelfEdge(pEdge))
 		{
 			pGraphics.setStroke(Color.BLACK);
-			drawSelfEdge(pEdge, pGraphics);
+			drawSelfEdge(pEdge, pGraphics, pEdgePath);
 		}
 		else 
 		{
-			ToolGraphics.strokeSharpPath(pGraphics, (Path) getShape(pEdge), LineStyle.SOLID);
+			ToolGraphics.strokeSharpPath(pGraphics, (Path) getShape(pEdge, pEdgePath), LineStyle.SOLID);
 		}
-		drawLabel((StateTransitionEdge)pEdge, pGraphics);
-		drawArrowHead(pEdge, pGraphics);
+		drawLabel((StateTransitionEdge)pEdge, pGraphics, pEdgePath);
+		drawArrowHead(pEdge, pGraphics, pEdgePath);
 	}
 	
-	private void drawArrowHead(Edge pEdge, GraphicsContext pGraphics)
+	protected Shape getShape(Edge pEdge, EdgePath pEdgePath)
 	{
 		if( isSelfEdge(pEdge) )
 		{
-			Point connectionPoint2 = getSelfEdgeConnectionPoints(pEdge).getPoint2();
-			if( getPosition(pEdge) == 1 )
+			return getSelfEdgeShape(pEdge, pEdgePath);
+		}
+		else
+		{
+			return getNormalEdgeShape(pEdge, pEdgePath);
+		}
+	}
+	
+	private Shape getNormalEdgeShape(Edge pEdge, EdgePath pEdgePath)
+	{
+		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
+		Path path = new Path();
+		MoveTo moveTo = new MoveTo(line.getPoint1().getX(), line.getPoint1().getY());
+		QuadCurveTo curveTo = new QuadCurveTo(getControlPoint(pEdge, pEdgePath).getX(), getControlPoint(pEdge, pEdgePath).getY(), 
+				line.getPoint2().getX(), line.getPoint2().getY());
+		path.getElements().addAll(moveTo, curveTo);
+		return path;
+	}
+	
+	/**
+     *  Gets the control point for the quadratic spline.
+     * @return the control point
+     */
+	private Point2D getControlPoint(Edge pEdge, EdgePath pEdgePath)
+	{
+		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
+		double tangent = Math.tan(Math.toRadians(DEGREES_10));
+		if( pEdgePath.getPosition() > 1 )
+		{
+			tangent = Math.tan(Math.toRadians(DEGREES_20));
+		}
+		double dx = (line.getX2() - line.getX1()) / 2;
+		double dy = (line.getY2() - line.getY1()) / 2;
+		return new Point2D((line.getX1() + line.getX2()) / 2 + tangent * dy, (line.getY1() + line.getY2()) / 2 - tangent * dx);         
+	}
+	
+	private Shape getSelfEdgeShape(Edge pEdge, EdgePath pEdgePath)
+	{
+		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
+		Arc arc = new Arc();
+		arc.setRadiusX(SELF_EDGE_OFFSET*2);
+		arc.setRadiusY(SELF_EDGE_OFFSET*2);
+		arc.setLength(DEGREES_270);
+		arc.setType(ArcType.OPEN);
+		if( pEdgePath.getPosition() == 1 )
+		{
+			arc.setCenterX(line.getX1());
+			arc.setCenterY(line.getY1()-SELF_EDGE_OFFSET);
+			arc.setStartAngle(DEGREES_270);
+		}
+		else
+		{		
+			arc.setCenterX(line.getX1()-SELF_EDGE_OFFSET);
+			arc.setCenterY(line.getY1()-SELF_EDGE_OFFSET*2);
+			arc.setStartAngle(1);
+		}
+		return arc;
+	}
+	
+	private void drawSelfEdge(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+	{
+		Arc arc = (Arc) getShape(pEdge, pEdgePath);
+		double width = pGraphics.getLineWidth();
+		pGraphics.setLineWidth(LINE_WIDTH);
+		pGraphics.strokeArc(arc.getCenterX(), arc.getCenterY(), arc.getRadiusX(), arc.getRadiusY(), arc.getStartAngle(), 
+				arc.getLength(), arc.getType());
+		pGraphics.setLineWidth(width);
+	}
+	
+	private void drawArrowHead(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+	{
+		if( isSelfEdge(pEdge) )
+		{
+			Point connectionPoint2 = pEdgePath.getEnd();
+			if( pEdgePath.getPosition() == 1 )
 			{
 				ArrowHead.V.view().draw(pGraphics, new Point(connectionPoint2.getX()+SELF_EDGE_OFFSET, 
-						connectionPoint2.getY()-SELF_EDGE_OFFSET/4), getConnectionPoints(pEdge).getPoint2());
+						connectionPoint2.getY()-SELF_EDGE_OFFSET/4), connectionPoint2);
 			}
 			else
 			{
 				ArrowHead.V.view().draw(pGraphics, new Point(connectionPoint2.getX()-SELF_EDGE_OFFSET/4, 
-						connectionPoint2.getY()-SELF_EDGE_OFFSET), getConnectionPoints(pEdge).getPoint2());
+						connectionPoint2.getY()-SELF_EDGE_OFFSET), connectionPoint2);
 			}
 		}
 		else
 		{
-			ArrowHead.V.view().draw(pGraphics, Conversions.toPoint(getControlPoint(pEdge)), getConnectionPoints(pEdge).getPoint2());
+			ArrowHead.V.view().draw(pGraphics, Conversions.toPoint(getControlPoint(pEdge, pEdgePath)), pEdgePath.getEnd());
 		}
 	}
 	
@@ -114,10 +191,10 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	 *  Draws the label.
 	 *  @param pGraphics2D the graphics context
 	 */
-	private void drawLabel(StateTransitionEdge pEdge, GraphicsContext pGraphics)
+	private void drawLabel(StateTransitionEdge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
 	{
 		adjustLabelFont(pEdge);
-		Rectangle2D labelBounds = getLabelBounds(pEdge);
+		Rectangle2D labelBounds = getLabelBounds(pEdge, pEdgePath);
 		double x = labelBounds.getMinX();
 		double y = labelBounds.getMinY();
 		
@@ -133,25 +210,15 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		pGraphics.translate(-x, -y);        
 	}
 	
-	private void drawSelfEdge(Edge pEdge, GraphicsContext pGraphics)
-	{
-		Arc arc = (Arc) getShape(pEdge);
-		double width = pGraphics.getLineWidth();
-		pGraphics.setLineWidth(LINE_WIDTH);
-		pGraphics.strokeArc(arc.getCenterX(), arc.getCenterY(), arc.getRadiusX(), arc.getRadiusY(), arc.getStartAngle(), 
-				arc.getLength(), arc.getType());
-		pGraphics.setLineWidth(width);
-	}
-	
-	private Rectangle2D getLabelBounds(StateTransitionEdge pEdge)
+	private Rectangle2D getLabelBounds(StateTransitionEdge pEdge, EdgePath pEdgePath)
 	{
 		if( isSelfEdge(pEdge) )
 		{
-			return getSelfEdgeLabelBounds(pEdge);
+			return getSelfEdgeLabelBounds(pEdge, pEdgePath);
 		}
 		else
 		{
-			return getNormalEdgeLabelBounds(pEdge);
+			return getNormalEdgeLabelBounds(pEdge, pEdgePath);
 		}
 	}
 	
@@ -173,10 +240,10 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	 * Gets the bounds of the label text.
 	 * @return the bounds of the label text
 	 */
-	private Rectangle2D getNormalEdgeLabelBounds(StateTransitionEdge pEdge)
+	private Rectangle2D getNormalEdgeLabelBounds(StateTransitionEdge pEdge, EdgePath pEdgePath)
 	{
-		Line line = getConnectionPoints(pEdge);
-		Point2D control = getControlPoint(pEdge);
+		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
+		Point2D control = getControlPoint(pEdge, pEdgePath);
 		double x = control.getX() / 2 + line.getX1() / 4 + line.getX2() / 4;
 		double y = control.getY() / 2 + line.getY1() / 4 + line.getY2() / 4;
 
@@ -209,7 +276,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		}
 		
 		// Additional gap to make sure the labels don't overlap
-		if( pEdge.getDiagram() != null && getPosition(pEdge) > 1 )
+		if( pEdge.getDiagram() != null && pEdgePath.getPosition() > 1 )
 		{
 			double delta = Math.abs(Math.atan2(line.getX2()-line.getX1(), line.getY2()-line.getY1()));
 			delta = textDimensions.height() - delta*RADIANS_TO_PIXELS;
@@ -230,12 +297,12 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	 * in the middle of it.
 	 * @return the bounds of the label text
 	 */
-	private Rectangle2D getSelfEdgeLabelBounds(StateTransitionEdge pEdge)
+	private Rectangle2D getSelfEdgeLabelBounds(StateTransitionEdge pEdge, EdgePath pEdgePath)
 	{
-		Line line = getConnectionPoints(pEdge);
+		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
 		adjustLabelFont(pEdge);
 		Dimension textDimensions = getLabelBounds(pEdge.getMiddleLabel());
-		if( getPosition(pEdge) == 1 )
+		if( pEdgePath.getPosition() == 1 )
 		{
 			return new Rectangle2D(line.getX1() + SELF_EDGE_OFFSET - textDimensions.width()/2,	
 					line.getY1() - SELF_EDGE_OFFSET*2, textDimensions.width(), textDimensions.height());
@@ -262,54 +329,25 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		}
 	}
 
-	@Override
-	protected Shape getShape(Edge pEdge)
-	{
-		if( isSelfEdge(pEdge) )
-		{
-			return getSelfEdgeShape(pEdge);
-		}
-		else
-		{
-			return getNormalEdgeShape(pEdge);
-		}
-	}
-	
 	private boolean isSelfEdge(Edge pEdge)
 	{
 		return pEdge.getStart() == pEdge.getEnd();
 	}
 	
-	private Shape getSelfEdgeShape(Edge pEdge)
-	{
-		Line line = getSelfEdgeConnectionPoints(pEdge);
-		Arc arc = new Arc();
-		arc.setRadiusX(SELF_EDGE_OFFSET*2);
-		arc.setRadiusY(SELF_EDGE_OFFSET*2);
-		arc.setLength(DEGREES_270);
-		arc.setType(ArcType.OPEN);
-		if( getPosition(pEdge) == 1 )
-		{
-			arc.setCenterX(line.getX1());
-			arc.setCenterY(line.getY1()-SELF_EDGE_OFFSET);
-			arc.setStartAngle(DEGREES_270);
-		}
-		else
-		{		
-			arc.setCenterX(line.getX1()-SELF_EDGE_OFFSET);
-			arc.setCenterY(line.getY1()-SELF_EDGE_OFFSET*2);
-			arc.setStartAngle(1);
-		}
-		return arc;
-	}
-	
 	@Override
-	public boolean contains(Edge pEdge, Point pPoint)
+	public boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
 	{
-		boolean result = super.contains(pEdge, pPoint);
-		if (getShape(pEdge) instanceof Arc)
+		if(pPoint.distance(pEdgePath.getStart()) <= MAX_DISTANCE || pPoint.distance(pEdgePath.getEnd()) <= MAX_DISTANCE)
 		{
-			Arc arc = (Arc) getShape(pEdge);
+			return false;
+		}
+
+		Shape fatPath = getShape(pEdge, pEdgePath);
+		fatPath.setStrokeWidth(2 * MAX_DISTANCE);
+		boolean result = fatPath.contains(pPoint.getX(), pPoint.getY());
+		if (getShape(pEdge, pEdgePath) instanceof Arc)
+		{
+			Arc arc = (Arc) getShape(pEdge, pEdgePath);
 			arc.setRadiusX(arc.getRadiusX() + 2 * MAX_DISTANCE);
 			arc.setRadiusY(arc.getRadiusY() + 2 * MAX_DISTANCE);
 			result = arc.contains(pPoint.getX(), pPoint.getY());
@@ -317,121 +355,16 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		return result;
 	}
 	
-	/** 
-	 * @return An index that represents the position in the list of
-	 *     edges between the same start and end nodes. 
-	 * @pre getGraph() != null
-	 */
-	private int getPosition(Edge pEdge)
+	@Override
+	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
 	{
-		assert pEdge.getDiagram() != null;
-		int lReturn = 0;
-		for( Edge edge : pEdge.getDiagram().edgesConnectedTo(pEdge.getStart()))
-		{
-			if( edge.getStart() == pEdge.getStart() && edge.getEnd() == pEdge.getEnd())
-			{
-				lReturn++;
-			}
-			if( edge == pEdge )
-			{
-				return lReturn;
-			}
-		}
-		assert lReturn > 0;
-		return lReturn;
-	}
-	
-	/*
-	 * The connection points for the self-edge are an offset from the top-right
-	 * corner.
-	 */
-	private Line getSelfEdgeConnectionPoints(Edge pEdge)
-	{
-		if( getPosition(pEdge) == 1 )
-		{
-			Point2D point1 = new Point2D(NodeViewerRegistry.getBounds(pEdge.getStart()).getMaxX() - SELF_EDGE_OFFSET, 
-					NodeViewerRegistry.getBounds(pEdge.getStart()).getY());
-			Point2D point2 = new Point2D(NodeViewerRegistry.getBounds(pEdge.getStart()).getMaxX(), 
-					NodeViewerRegistry.getBounds(pEdge.getStart()).getY() + SELF_EDGE_OFFSET);
-			return new Line(Conversions.toPoint(point1), Conversions.toPoint(point2));
-		}
-		else
-		{
-			Point2D point1 = new Point2D(NodeViewerRegistry.getBounds(pEdge.getStart()).getX(), 
-					NodeViewerRegistry.getBounds(pEdge.getStart()).getY() + SELF_EDGE_OFFSET);
-			Point2D point2 = new Point2D(NodeViewerRegistry.getBounds(pEdge.getStart()).getX() + SELF_EDGE_OFFSET, 
-					NodeViewerRegistry.getBounds(pEdge.getStart()).getY());
-			return new Line(Conversions.toPoint(point1), Conversions.toPoint(point2));
-		}
-	}
-	
-	private Shape getNormalEdgeShape(Edge pEdge)
-	{
-		Line line = getConnectionPoints(pEdge);
-		Path path = new Path();
-		MoveTo moveTo = new MoveTo(line.getPoint1().getX(), line.getPoint1().getY());
-		QuadCurveTo curveTo = new QuadCurveTo(getControlPoint(pEdge).getX(), getControlPoint(pEdge).getY(), 
-				line.getPoint2().getX(), line.getPoint2().getY());
-		path.getElements().addAll(moveTo, curveTo);
-		return path;
-	}
-	
-	
-	/**
-     *  Gets the control point for the quadratic spline.
-     * @return the control point
-     */
-	private Point2D getControlPoint(Edge pEdge)
-	{
-		Line line = getConnectionPoints(pEdge);
-		double tangent = Math.tan(Math.toRadians(DEGREES_10));
-		if( getPosition(pEdge) > 1 )
-		{
-			tangent = Math.tan(Math.toRadians(DEGREES_20));
-		}
-		double dx = (line.getX2() - line.getX1()) / 2;
-		double dy = (line.getY2() - line.getY1()) / 2;
-		return new Point2D((line.getX1() + line.getX2()) / 2 + tangent * dy, (line.getY1() + line.getY2()) / 2 - tangent * dx);         
+		return super.getBounds(pEdge).add(Conversions.toRectangle(getLabelBounds((StateTransitionEdge)pEdge, pEdgePath)));
 	}
 	
 	@Override
-	public Rectangle getBounds(Edge pEdge)
+	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
 	{
-		return super.getBounds(pEdge).add(Conversions.toRectangle(getLabelBounds((StateTransitionEdge)pEdge)));
-	}
-	
-	@Override
-	public Line getConnectionPoints(Edge pEdge)
-	{
-		if(isSelfEdge(pEdge))
-		{
-			return getSelfEdgeConnectionPoints(pEdge);
-		}
-		else
-		{
-			return getNormalEdgeConnectionsPoints(pEdge);
-		}
-	}
-	
-	/*
-	 * The connection points are a slight offset from the center.
-	 * @return
-	 */
-	private Line getNormalEdgeConnectionsPoints(Edge pEdge)
-	{
-		Rectangle start = NodeViewerRegistry.getBounds(pEdge.getStart());
-		Rectangle end = NodeViewerRegistry.getBounds(pEdge.getEnd());
-		Point startCenter = start.getCenter();
-		Point endCenter = end.getCenter();
-		int turn = DEGREES_5;
-		if( pEdge.getDiagram() != null && getPosition(pEdge) > 1 )
-		{
-			turn = DEGREES_20;
-		}
-		Direction d1 = Direction.fromLine(startCenter, endCenter).rotatedBy(-turn);
-		Direction d2 = Direction.fromLine(endCenter, startCenter).rotatedBy(turn);
-		return new Line(NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), d1), 
-				NodeViewerRegistry.getConnectionPoints(pEdge.getEnd(), d2));
+		ToolGraphics.drawHandles(pGraphics, new Line(pEdgePath.getStart(), pEdgePath.getEnd()));	
 	}
 	
 	@Override

@@ -78,6 +78,8 @@ public interface EdgeViewer
 	 */
    	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics);
    	
+   	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath);
+   	
    	/**
      * Tests whether pEdge contains a point.
      * @param pEdge the edge to test
