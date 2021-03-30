@@ -48,10 +48,10 @@ public class StateDiagramViewer extends DiagramViewer
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
 		
 		LAYOUTER.layOut(aEdgeLayout, pDiagram, pGraphics);
-		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, aEdgeLayout.get(edge), pGraphics));
+		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, aEdgeLayout, pGraphics));
 		
 		BOUND_CACHE.clear();
-		pDiagram.edges().forEach(edge -> BOUND_CACHE.put(edge, EdgeViewerRegistry.getBounds(edge, aEdgeLayout.get(edge))));
+		pDiagram.edges().forEach(edge -> BOUND_CACHE.put(edge, EdgeViewerRegistry.getBounds(edge, aEdgeLayout)));
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class StateDiagramViewer extends DiagramViewer
 	@Override
 	public boolean contains(Edge pEdge, Point pPoint)
 	{
-		return EdgeViewerRegistry.contains(pEdge, pPoint, aEdgeLayout.get(pEdge));
+		return EdgeViewerRegistry.contains(pEdge, pPoint, aEdgeLayout);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class StateDiagramViewer extends DiagramViewer
 	@Override
 	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
    	{
-		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics, aEdgeLayout.get(pEdge));
+		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics, aEdgeLayout);
    	}
 	
 }

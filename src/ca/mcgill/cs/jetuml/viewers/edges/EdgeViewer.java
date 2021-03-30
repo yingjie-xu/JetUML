@@ -24,7 +24,7 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
-import ca.mcgill.cs.jetuml.layout.EdgePath;
+import ca.mcgill.cs.jetuml.layout.EdgeLayout;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -43,7 +43,7 @@ public interface EdgeViewer
    	 */
 	Rectangle getBounds(Edge pEdge);
 	
-	Rectangle getBounds(Edge pEdge, EdgePath pEdgePath);
+	Rectangle getBounds(Edge pEdge, EdgeLayout pLayout);
 	
 	/**
      * Draws pEdge.
@@ -56,11 +56,11 @@ public interface EdgeViewer
    	/**
      * Draws pEdge with precalculated pEdgePath.
      * @param pEdge The edge to draw.
-     * @param pEdgePath The edge path to draw.
+     * @param pLayout layout to use
      * @param pGraphics the graphics context
      * @pre pEdge != null
 	 */
-	void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics);
+	void draw(Edge pEdge, EdgeLayout pLayout, GraphicsContext pGraphics);
    	
    	/**
    	 * Returns an icon that represents pEdge.
@@ -78,7 +78,7 @@ public interface EdgeViewer
 	 */
    	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics);
    	
-   	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath);
+   	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgeLayout pLayout);
    	
    	/**
      * Tests whether pEdge contains a point.
@@ -88,7 +88,7 @@ public interface EdgeViewer
      */
    	boolean contains(Edge pEdge, Point pPoint);
    	
-   	boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath);
+   	boolean contains(Edge pEdge, Point pPoint, EdgeLayout pLayout);
    	
    	/**
      * Gets the points at which pEdge is connected to

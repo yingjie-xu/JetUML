@@ -40,7 +40,7 @@ import ca.mcgill.cs.jetuml.diagram.edges.UseCaseGeneralizationEdge;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
-import ca.mcgill.cs.jetuml.layout.EdgePath;
+import ca.mcgill.cs.jetuml.layout.EdgeLayout;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -95,9 +95,9 @@ public final class EdgeViewerRegistry
 		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint);
 	}
 	
-	public static boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
+	public static boolean contains(Edge pEdge, Point pPoint, EdgeLayout pLayout)
 	{
-		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint, pEdgePath);
+		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint, pLayout);
 	}
 	
   	/**
@@ -125,13 +125,13 @@ public final class EdgeViewerRegistry
    	/**
      * Draws pEdge with precalculated pEdgePath.
      * @param pEdge The edge to draw.
-     * @param pEdgePath The edge path to draw.
+     * @param pLayout layout to use
      * @param pGraphics the graphics context
      * @pre pEdge != null
 	 */
-   	public static void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
+   	public static void draw(Edge pEdge, EdgeLayout pLayout, GraphicsContext pGraphics)
    	{
-   		INSTANCE.viewerFor(pEdge).draw(pEdge, pEdgePath, pGraphics);
+   		INSTANCE.viewerFor(pEdge).draw(pEdge, pLayout, pGraphics);
    	}
    	
    	/**
@@ -156,9 +156,9 @@ public final class EdgeViewerRegistry
    		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics);
    	}
    	
-   	public static void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+   	public static void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgeLayout pLayout)
    	{
-   		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics, pEdgePath);
+   		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics, pLayout);
    	}
    	
 	/**
@@ -173,9 +173,9 @@ public final class EdgeViewerRegistry
 		return INSTANCE.viewerFor(pEdge).getBounds(pEdge);
 	}
 	
-	public static Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
+	public static Rectangle getBounds(Edge pEdge, EdgeLayout pLayout)
 	{
-		return INSTANCE.viewerFor(pEdge).getBounds(pEdge, pEdgePath);
+		return INSTANCE.viewerFor(pEdge).getBounds(pEdge, pLayout);
 	}
 	
   	/**

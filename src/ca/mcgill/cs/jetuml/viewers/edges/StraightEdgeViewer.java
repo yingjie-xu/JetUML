@@ -25,6 +25,7 @@ import ca.mcgill.cs.jetuml.geom.Conversions;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgeLayout;
 import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
 import ca.mcgill.cs.jetuml.views.LineStyle;
@@ -68,11 +69,12 @@ public class StraightEdgeViewer extends AbstractEdgeViewer
 	}
 	
 	@Override
-	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
+	public void draw(Edge pEdge, EdgeLayout pLayout, GraphicsContext pGraphics)
 	{
+		EdgePath path = pLayout.get(pEdge);
 		Path shape = (Path) getShape(pEdge);
 		ToolGraphics.strokeSharpPath(pGraphics, shape, aLineStyle);
-		aArrowHead.view().draw(pGraphics, pEdgePath.getStart(), pEdgePath.getEnd());
+		aArrowHead.view().draw(pGraphics, path.getStart(), path.getEnd());
 	}
 	
 	@Override
@@ -89,13 +91,14 @@ public class StraightEdgeViewer extends AbstractEdgeViewer
 	}
 	
 	@Override
-	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
+	public Rectangle getBounds(Edge pEdge, EdgeLayout pLayout)
 	{
-		Rectangle bounds = super.getBounds(pEdge, pEdgePath);
+		EdgePath path = pLayout.get(pEdge);
+		Rectangle bounds = super.getBounds(pEdge, pLayout);
 		if( aArrowHead != ArrowHead.NONE )
 		{
-			bounds = bounds.add(Conversions.toRectangle(aArrowHead.view().getPath(pEdgePath.getStart(), 
-					pEdgePath.getEnd()).getBoundsInLocal()));
+			bounds = bounds.add(Conversions.toRectangle(aArrowHead.view().getPath(path.getStart(), 
+					path.getEnd()).getBoundsInLocal()));
 		}
 		return bounds;
 	}
