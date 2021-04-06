@@ -77,6 +77,16 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 		return path;
 	}
 	
+	protected Shape getShape(Edge pEdge, EdgePath pEdgePath)
+	{
+		assert pEdge != null;
+		Line endPoints = getConnectionPoints(pEdge);
+		Path path = new Path();
+		path.getElements().addAll(new MoveTo(endPoints.getX1(), endPoints.getY1()), 
+				new LineTo(endPoints.getX2(), endPoints.getY2()));
+		return path;
+	}
+	
 	/**
 	 * @param pText Some text to test.
 	 * @return The width and height of the text.
@@ -104,12 +114,13 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	@Override
 	public boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
 	{
-		if(pPoint.distance(pEdgePath.getStart()) <= MAX_DISTANCE || pPoint.distance(pEdgePath.getEnd()) <= MAX_DISTANCE)
+		Line conn = getConnectionPoints(pEdge, pEdgePath);
+		if(pPoint.distance(conn.getPoint1()) <= MAX_DISTANCE || pPoint.distance(conn.getPoint2()) <= MAX_DISTANCE)
 		{
 			return false;
 		}
 
-		Shape fatPath = getShape(pEdge);
+		Shape fatPath = getShape(pEdge, pEdgePath);
 		fatPath.setStrokeWidth(2 * MAX_DISTANCE);
 		return fatPath.contains(pPoint.getX(), pPoint.getY());
 	}
@@ -124,7 +135,8 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	@Override
 	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath) 
 	{
-		return getBounds(pEdge);
+		Bounds bounds = getShape(pEdge, pEdgePath).getBoundsInLocal();
+		return new Rectangle((int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getWidth(), (int)bounds.getHeight());
 	}
 	
 	/*
@@ -145,6 +157,18 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 		return new Line(NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), toEnd), 
 				NodeViewerRegistry.getConnectionPoints(pEdge.getEnd(), toEnd.rotatedBy(DEGREES_180)));
 	}
+	
+	@Override
+	public Line getConnectionPoints(Edge pEdge, EdgePath pEdgePath)
+	{
+		Rectangle startBounds = NodeViewerRegistry.getBounds(pEdge.getStart());
+		Rectangle endBounds = NodeViewerRegistry.getBounds(pEdge.getEnd());
+		Point startCenter = startBounds.getCenter();
+		Point endCenter = endBounds.getCenter();
+		Direction toEnd = Direction.fromLine(startCenter, endCenter);
+		return new Line(NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), toEnd), 
+				NodeViewerRegistry.getConnectionPoints(pEdge.getEnd(), toEnd.rotatedBy(DEGREES_180)));
+	}
 
 	@Override
 	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
@@ -155,6 +179,6 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	@Override
 	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
 	{
-		drawSelectionHandles(pEdge, pGraphics);		
+		ToolGraphics.drawHandles(pGraphics, getConnectionPoints(pEdge, pEdgePath));
 	}
 }

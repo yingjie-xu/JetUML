@@ -94,15 +94,17 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		drawArrowHead(pEdge, pGraphics, edgePath);
 	}
 	
-	protected Shape getShape(Edge pEdge, StateDiagramEdgePath pEdgePath)
+	@Override
+	protected Shape getShape(Edge pEdge, EdgePath pEdgePath)
 	{
+		StateDiagramEdgePath edgePath = (StateDiagramEdgePath) pEdgePath;
 		if( isSelfEdge(pEdge) )
 		{
-			return getSelfEdgeShape(pEdge, pEdgePath);
+			return getSelfEdgeShape(pEdge, edgePath);
 		}
 		else
 		{
-			return getNormalEdgeShape(pEdge, pEdgePath);
+			return getNormalEdgeShape(pEdge, edgePath);
 		}
 	}
 	

@@ -70,7 +70,7 @@ public class StraightEdgeViewer extends AbstractEdgeViewer
 	@Override
 	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
 	{
-		Path shape = (Path) getShape(pEdge);
+		Path shape = (Path) getShape(pEdge, pEdgePath);
 		ToolGraphics.strokeSharpPath(pGraphics, shape, aLineStyle);
 		aArrowHead.view().draw(pGraphics, pEdgePath.getStart(), pEdgePath.getEnd());
 	}

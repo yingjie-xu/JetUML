@@ -25,6 +25,7 @@ import ca.mcgill.cs.jetuml.geom.Direction;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
+import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.viewers.nodes.NodeViewerRegistry;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
 import ca.mcgill.cs.jetuml.views.LineStyle;
@@ -45,51 +46,51 @@ public final class ObjectReferenceEdgeViewer extends AbstractEdgeViewer
 	private static final int ENDSIZE = 10;
 	
 	@Override
-	protected Shape getShape(Edge pEdge)
+	protected Shape getShape(Edge pEdge, EdgePath pEdgePath)
 	{
 		if(isSShaped(pEdge))
 		{
-			return getSShape(getConnectionPoints(pEdge));
+			return getSShape(pEdgePath);
 		}
 		else
 		{
-			return getCShape(getConnectionPoints(pEdge));
+			return getCShape(pEdgePath);
 		}			
 	}
 	
-	private Path getSShape(Line pConnectionPoints)
+	private Path getSShape(EdgePath pEdgePath)
 	{
-		final int x1 = pConnectionPoints.getX1() + ENDSIZE;
-		final int y1 = pConnectionPoints.getY1();
-		final int x2 = pConnectionPoints.getX2() - ENDSIZE;
-		final int y2 = pConnectionPoints.getY2();
-		final int xmid = (pConnectionPoints.getX1() + pConnectionPoints.getX2()) / 2;
-		final int ymid = (pConnectionPoints.getY1() + pConnectionPoints.getY2()) / 2;
+		final int x1 = pEdgePath.getStart().getX() + ENDSIZE;
+		final int y1 = pEdgePath.getStart().getY();
+		final int x2 = pEdgePath.getEnd().getX() - ENDSIZE;
+		final int y2 = pEdgePath.getEnd().getY();
+		final int xmid = (pEdgePath.getStart().getX() + pEdgePath.getEnd().getX()) / 2;
+		final int ymid = (pEdgePath.getStart().getY() + pEdgePath.getEnd().getY()) / 2;
      
-		MoveTo moveTo = new MoveTo(pConnectionPoints.getX1(), y1);
+		MoveTo moveTo = new MoveTo(pEdgePath.getStart().getX(), y1);
 		LineTo lineTo1 = new LineTo(x1, y1);
 		QuadCurveTo quadTo1 = new QuadCurveTo((x1 + xmid) / 2, y1, xmid, ymid);
 		QuadCurveTo quadTo2 = new QuadCurveTo((x2 + xmid) / 2, y2, x2, y2);
-		LineTo lineTo2 = new LineTo(pConnectionPoints.getX2(), y2);
+		LineTo lineTo2 = new LineTo(pEdgePath.getEnd().getX(), y2);
 		
 		Path path = new Path();
 		path.getElements().addAll(moveTo, lineTo1, quadTo1, quadTo2, lineTo2);
 		return path;
 	}
 	
-	private Path getCShape(Line pConnectionPoints)
+	private Path getCShape(EdgePath pEdgePath)
 	{
-		final int x1 = Math.max(pConnectionPoints.getX1(), pConnectionPoints.getX2()) + ENDSIZE;
-		final int y1 = pConnectionPoints.getY1();
+		final int x1 = Math.max(pEdgePath.getStart().getX(), pEdgePath.getEnd().getX()) + ENDSIZE;
+		final int y1 = pEdgePath.getStart().getY();
 		final int x2 = x1 + ENDSIZE;
-		final int y2 = pConnectionPoints.getY2();
-		final int ymid = (pConnectionPoints.getY1() + pConnectionPoints.getY2()) / 2;
+		final int y2 = pEdgePath.getEnd().getY();
+		final int ymid = (pEdgePath.getStart().getY() + pEdgePath.getEnd().getY()) / 2;
 		
-		MoveTo moveTo = new MoveTo(pConnectionPoints.getX1(), y1);
+		MoveTo moveTo = new MoveTo(pEdgePath.getStart().getX(), y1);
 		LineTo lineTo1 = new LineTo(x1, y1);
 		QuadCurveTo quadTo1 = new QuadCurveTo(x2, y1, x2, ymid);
 		QuadCurveTo quadTo2 = new QuadCurveTo(x2, y2, x1, y2);
-		LineTo lineTo2 = new LineTo(pConnectionPoints.getX2(), y2);
+		LineTo lineTo2 = new LineTo(pEdgePath.getEnd().getX(), y2);
 		
 		Path path = new Path();
 		path.getElements().addAll(moveTo, lineTo1, quadTo1, quadTo2, lineTo2);
@@ -110,25 +111,30 @@ public final class ObjectReferenceEdgeViewer extends AbstractEdgeViewer
 	@Override
 	public void draw(Edge pEdge, GraphicsContext pGraphics)
 	{
-		ToolGraphics.strokeSharpPath(pGraphics, (Path) getShape(pEdge), LineStyle.SOLID);
-		Line connectionPoints = getConnectionPoints(pEdge);
+		// not used any more
+	}
+	
+	@Override
+	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
+	{
+		ToolGraphics.strokeSharpPath(pGraphics, (Path) getShape(pEdge, pEdgePath), LineStyle.SOLID);
 		
 		if(isSShaped(pEdge))
 		{
 			ArrowHead.BLACK_TRIANGLE.view().draw(pGraphics, 
-					new Point(connectionPoints.getX2() - ENDSIZE, connectionPoints.getY2()), 
-					new Point(connectionPoints.getX2(), connectionPoints.getY2()));      
+					new Point(pEdgePath.getEnd().getX() - ENDSIZE, pEdgePath.getEnd().getY()), 
+					new Point(pEdgePath.getEnd().getX(), pEdgePath.getEnd().getY()));      
 		}
 		else
 		{
 			ArrowHead.BLACK_TRIANGLE.view().draw(pGraphics, 
-					new Point(connectionPoints.getX2() + ENDSIZE, connectionPoints.getY2()), 
-					new Point(connectionPoints.getX2(), connectionPoints.getY2()));      
+					new Point(pEdgePath.getEnd().getX() + ENDSIZE, pEdgePath.getEnd().getY()), 
+					new Point(pEdgePath.getEnd().getX(), pEdgePath.getEnd().getY()));      
 		}
 	}
 
 	@Override
-	public Line getConnectionPoints(Edge pEdge)
+	public Line getConnectionPoints(Edge pEdge, EdgePath pEdgePath)
 	{
 		Point point = NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), Direction.EAST);
 		if (isSShaped(pEdge))
@@ -147,7 +153,7 @@ public final class ObjectReferenceEdgeViewer extends AbstractEdgeViewer
 		Canvas canvas = new Canvas(BUTTON_SIZE, BUTTON_SIZE);
 		GraphicsContext graphics = canvas.getGraphicsContext2D();
 		graphics.scale(0.6, 0.6);
-		Path path = getCShape(new Line(new Point(5, 5), new Point(15,25)));
+		Path path = getCShape(new EdgePath(new Point(5, 5), new Point(15,25)));
 		ToolGraphics.strokeSharpPath(graphics, path, LineStyle.SOLID);
 		ArrowHead.BLACK_TRIANGLE.view().draw(graphics, new Point(20,25), new Point(15, 25));
 		return canvas;

@@ -36,6 +36,7 @@ import ca.mcgill.cs.jetuml.views.DiagramViewer;
 import ca.mcgill.cs.jetuml.views.SequenceDiagramViewer;
 import ca.mcgill.cs.jetuml.views.UseCaseDiagramViewer;
 import ca.mcgill.cs.jetuml.views.StateDiagramViewer;
+import ca.mcgill.cs.jetuml.views.ObjectDiagramViewer;
 
 /**
  * The different types of UML diagrams supported by 
@@ -91,7 +92,7 @@ public enum DiagramType
 			"ObjectDiagram",
 			".object",
 			ObjectDiagramBuilder::new, 
-			new DiagramViewer(),
+			new ObjectDiagramViewer(),
 			new DiagramElement[] {
 					Prototypes.OBJECT,
 					Prototypes.FIELD,

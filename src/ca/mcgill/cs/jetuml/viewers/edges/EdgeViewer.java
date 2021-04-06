@@ -117,6 +117,15 @@ public interface EdgeViewer
    	Line getConnectionPoints(Edge pEdge);
    	
    	/**
+     * @param pEdge The target edge
+   	 * @param pEdgePath The edge path to draw
+     * @return a line joining the two connection points
+     * @pre pEdge != null
+     * 
+     */
+   	Line getConnectionPoints(Edge pEdge, EdgePath pEdgePath);
+   	
+   	/**
    	 * @param pEdge The edge to test.
    	 * @return The view category for this edge. Never null.
    	 * @pre pEdge != null

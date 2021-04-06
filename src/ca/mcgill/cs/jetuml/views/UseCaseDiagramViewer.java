@@ -91,7 +91,7 @@ public class UseCaseDiagramViewer extends DiagramViewer
 	@Override
 	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics)
    	{
-		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics);
+		EdgeViewerRegistry.drawSelectionHandles(pEdge, pGraphics, aEdgeLayout.get(pEdge));
    	}
 	
 }
