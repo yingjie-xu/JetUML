@@ -48,10 +48,10 @@ public class UseCaseDiagramViewer extends DiagramViewer
 		pDiagram.rootNodes().forEach(node -> drawNode(node, pGraphics));
 		
 		LAYOUTER.layOut(aEdgeLayout, pDiagram, pGraphics);
-		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, aEdgeLayout, pGraphics));
+		pDiagram.edges().forEach(edge -> EdgeViewerRegistry.draw(edge, aEdgeLayout.get(edge), pGraphics));
 		
 		BOUND_CACHE.clear();
-		pDiagram.edges().forEach(edge -> BOUND_CACHE.put(edge, EdgeViewerRegistry.getBounds(edge, aEdgeLayout)));
+		pDiagram.edges().forEach(edge -> BOUND_CACHE.put(edge, EdgeViewerRegistry.getBounds(edge, aEdgeLayout.get(edge))));
 	}
 	
 	/**
@@ -79,7 +79,7 @@ public class UseCaseDiagramViewer extends DiagramViewer
 	@Override
 	public boolean contains(Edge pEdge, Point pPoint)
 	{
-		return EdgeViewerRegistry.contains(pEdge, pPoint, aEdgeLayout);
+		return EdgeViewerRegistry.contains(pEdge, pPoint, aEdgeLayout.get(pEdge));
 	}
 	
 	/**

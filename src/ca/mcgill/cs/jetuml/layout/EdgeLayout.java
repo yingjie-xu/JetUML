@@ -1,9 +1,8 @@
 package ca.mcgill.cs.jetuml.layout;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.IdentityHashMap;
 import java.util.Map;
+
 import ca.mcgill.cs.jetuml.diagram.Edge;
 
 /**
@@ -11,7 +10,7 @@ import ca.mcgill.cs.jetuml.diagram.Edge;
  */
 public class EdgeLayout
 {
-	private final Map<Edge, EdgePath> aPaths = new LinkedHashMap<>(); // linked hashmap for maintaining the order
+	private final Map<Edge, EdgePath> aPaths = new IdentityHashMap<>();
 	
 	/**
 	 * Clear the layout.
@@ -41,23 +40,5 @@ public class EdgeLayout
 	{
 		assert pEdge != null;
 		return aPaths.get(pEdge);
-	}
-	
-	/**
-	 * Get a list of edges with the same start and end node in current layout.
-	 * @param pEdge edge to get the same start and end
-	 * @return list of edges
-	 */
-	public List<Edge> getSameStartAndEnd(Edge pEdge)
-	{
-		List<Edge> res = new ArrayList<>();
-		for (Edge e: aPaths.keySet())
-		{
-			if (pEdge.getStart() == e.getStart() && pEdge.getEnd() == e.getEnd())
-			{
-				res.add(e);
-			}
-		}
-		return res;
 	}
 }

@@ -28,7 +28,6 @@ import ca.mcgill.cs.jetuml.geom.Direction;
 import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
-import ca.mcgill.cs.jetuml.layout.EdgeLayout;
 import ca.mcgill.cs.jetuml.layout.EdgePath;
 import ca.mcgill.cs.jetuml.viewers.nodes.NodeViewerRegistry;
 import ca.mcgill.cs.jetuml.views.FontMetrics;
@@ -53,7 +52,7 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	private static final int DEGREES_180 = 180;
 	
 	@Override
-	public void draw(Edge pEdge, EdgeLayout pLayout, GraphicsContext pGraphics)
+	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
 	{
 		// TODO: this method should eventually be removed in the future
 		draw(pEdge, pGraphics);
@@ -103,10 +102,9 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	}
 	
 	@Override
-	public boolean contains(Edge pEdge, Point pPoint, EdgeLayout pLayout)
+	public boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
 	{
-		EdgePath path = pLayout.get(pEdge);
-		if(pPoint.distance(path.getStart()) <= MAX_DISTANCE || pPoint.distance(path.getEnd()) <= MAX_DISTANCE)
+		if(pPoint.distance(pEdgePath.getStart()) <= MAX_DISTANCE || pPoint.distance(pEdgePath.getEnd()) <= MAX_DISTANCE)
 		{
 			return false;
 		}
@@ -124,7 +122,7 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	}
 	
 	@Override
-	public Rectangle getBounds(Edge pEdge, EdgeLayout pLayout) 
+	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath) 
 	{
 		return getBounds(pEdge);
 	}
@@ -155,7 +153,7 @@ public abstract class AbstractEdgeViewer implements EdgeViewer
 	}
 	
 	@Override
-	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgeLayout pLayout)
+	public void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
 	{
 		drawSelectionHandles(pEdge, pGraphics);		
 	}
