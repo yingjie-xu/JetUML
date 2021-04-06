@@ -30,6 +30,7 @@ import ca.mcgill.cs.jetuml.geom.Line;
 import ca.mcgill.cs.jetuml.geom.Point;
 import ca.mcgill.cs.jetuml.geom.Rectangle;
 import ca.mcgill.cs.jetuml.layout.EdgePath;
+import ca.mcgill.cs.jetuml.layout.StateDiagramEdgePath;
 import ca.mcgill.cs.jetuml.views.ArrowHead;
 import ca.mcgill.cs.jetuml.views.LineStyle;
 import ca.mcgill.cs.jetuml.views.ToolGraphics;
@@ -79,20 +80,21 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	@Override
 	public void draw(Edge pEdge, EdgePath pEdgePath, GraphicsContext pGraphics)
 	{
+		StateDiagramEdgePath edgePath = (StateDiagramEdgePath) pEdgePath;
 		if(isSelfEdge(pEdge))
 		{
 			pGraphics.setStroke(Color.BLACK);
-			drawSelfEdge(pEdge, pGraphics, pEdgePath);
+			drawSelfEdge(pEdge, pGraphics, edgePath);
 		}
 		else 
 		{
-			ToolGraphics.strokeSharpPath(pGraphics, (Path) getShape(pEdge, pEdgePath), LineStyle.SOLID);
+			ToolGraphics.strokeSharpPath(pGraphics, (Path) getShape(pEdge, edgePath), LineStyle.SOLID);
 		}
-		drawLabel((StateTransitionEdge)pEdge, pGraphics, pEdgePath);
-		drawArrowHead(pEdge, pGraphics, pEdgePath);
+		drawLabel((StateTransitionEdge)pEdge, pGraphics, edgePath);
+		drawArrowHead(pEdge, pGraphics, edgePath);
 	}
 	
-	protected Shape getShape(Edge pEdge, EdgePath pEdgePath)
+	protected Shape getShape(Edge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		if( isSelfEdge(pEdge) )
 		{
@@ -104,7 +106,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		}
 	}
 	
-	private Shape getNormalEdgeShape(Edge pEdge, EdgePath pEdgePath)
+	private Shape getNormalEdgeShape(Edge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
 		Path path = new Path();
@@ -119,7 +121,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
      *  Gets the control point for the quadratic spline.
      * @return the control point
      */
-	private Point2D getControlPoint(Edge pEdge, EdgePath pEdgePath)
+	private Point2D getControlPoint(Edge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
 		double tangent = Math.tan(Math.toRadians(DEGREES_10));
@@ -132,7 +134,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		return new Point2D((line.getX1() + line.getX2()) / 2 + tangent * dy, (line.getY1() + line.getY2()) / 2 - tangent * dx);         
 	}
 	
-	private Shape getSelfEdgeShape(Edge pEdge, EdgePath pEdgePath)
+	private Shape getSelfEdgeShape(Edge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
 		Arc arc = new Arc();
@@ -155,7 +157,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		return arc;
 	}
 	
-	private void drawSelfEdge(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+	private void drawSelfEdge(Edge pEdge, GraphicsContext pGraphics, StateDiagramEdgePath pEdgePath)
 	{
 		Arc arc = (Arc) getShape(pEdge, pEdgePath);
 		double width = pGraphics.getLineWidth();
@@ -165,7 +167,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		pGraphics.setLineWidth(width);
 	}
 	
-	private void drawArrowHead(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+	private void drawArrowHead(Edge pEdge, GraphicsContext pGraphics, StateDiagramEdgePath pEdgePath)
 	{
 		if( isSelfEdge(pEdge) )
 		{
@@ -191,7 +193,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	 *  Draws the label.
 	 *  @param pGraphics2D the graphics context
 	 */
-	private void drawLabel(StateTransitionEdge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
+	private void drawLabel(StateTransitionEdge pEdge, GraphicsContext pGraphics, StateDiagramEdgePath pEdgePath)
 	{
 		adjustLabelFont(pEdge);
 		Rectangle2D labelBounds = getLabelBounds(pEdge, pEdgePath);
@@ -210,7 +212,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 		pGraphics.translate(-x, -y);        
 	}
 	
-	private Rectangle2D getLabelBounds(StateTransitionEdge pEdge, EdgePath pEdgePath)
+	private Rectangle2D getLabelBounds(StateTransitionEdge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		if( isSelfEdge(pEdge) )
 		{
@@ -240,7 +242,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	 * Gets the bounds of the label text.
 	 * @return the bounds of the label text
 	 */
-	private Rectangle2D getNormalEdgeLabelBounds(StateTransitionEdge pEdge, EdgePath pEdgePath)
+	private Rectangle2D getNormalEdgeLabelBounds(StateTransitionEdge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
 		Point2D control = getControlPoint(pEdge, pEdgePath);
@@ -297,7 +299,7 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	 * in the middle of it.
 	 * @return the bounds of the label text
 	 */
-	private Rectangle2D getSelfEdgeLabelBounds(StateTransitionEdge pEdge, EdgePath pEdgePath)
+	private Rectangle2D getSelfEdgeLabelBounds(StateTransitionEdge pEdge, StateDiagramEdgePath pEdgePath)
 	{
 		Line line = new Line(pEdgePath.getStart(), pEdgePath.getEnd());
 		adjustLabelFont(pEdge);
@@ -337,17 +339,18 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	@Override
 	public boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
 	{
+		StateDiagramEdgePath edgePath = (StateDiagramEdgePath) pEdgePath;
 		if(pPoint.distance(pEdgePath.getStart()) <= MAX_DISTANCE || pPoint.distance(pEdgePath.getEnd()) <= MAX_DISTANCE)
 		{
 			return false;
 		}
 
-		Shape fatPath = getShape(pEdge, pEdgePath);
+		Shape fatPath = getShape(pEdge, edgePath);
 		fatPath.setStrokeWidth(2 * MAX_DISTANCE);
 		boolean result = fatPath.contains(pPoint.getX(), pPoint.getY());
-		if (getShape(pEdge, pEdgePath) instanceof Arc)
+		if (getShape(pEdge, edgePath) instanceof Arc)
 		{
-			Arc arc = (Arc) getShape(pEdge, pEdgePath);
+			Arc arc = (Arc) getShape(pEdge, edgePath);
 			arc.setRadiusX(arc.getRadiusX() + 2 * MAX_DISTANCE);
 			arc.setRadiusY(arc.getRadiusY() + 2 * MAX_DISTANCE);
 			result = arc.contains(pPoint.getX(), pPoint.getY());
@@ -358,7 +361,8 @@ public final class StateTransitionEdgeViewer extends AbstractEdgeViewer
 	@Override
 	public Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
 	{
-		return super.getBounds(pEdge).add(Conversions.toRectangle(getLabelBounds((StateTransitionEdge)pEdge, pEdgePath)));
+		StateDiagramEdgePath edgePath = (StateDiagramEdgePath) pEdgePath;
+		return super.getBounds(pEdge).add(Conversions.toRectangle(getLabelBounds((StateTransitionEdge)pEdge, edgePath)));
 	}
 	
 	@Override

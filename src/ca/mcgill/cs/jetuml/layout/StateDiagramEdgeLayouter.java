@@ -1,6 +1,6 @@
 package ca.mcgill.cs.jetuml.layout;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import ca.mcgill.cs.jetuml.diagram.Diagram;
@@ -23,7 +23,7 @@ public class StateDiagramEdgeLayouter implements EdgeLayouter
 	private static final int DEGREES_5 = 5;
 	private static final int DEGREES_20 = 20;
 	
-	private Map<Node, Map<Node, Integer>> aPositions = new HashMap<>();
+	private Map<Node, Map<Node, Integer>> aPositions = new IdentityHashMap<>();
 	
 	@Override
 	public void layOut(EdgeLayout pLayout, Diagram pDiagram, GraphicsContext pGraphics)
@@ -49,7 +49,7 @@ public class StateDiagramEdgeLayouter implements EdgeLayouter
 		Node end = pEdge.getEnd();
 		if (!aPositions.containsKey(start))
 		{
-			aPositions.put(start, new HashMap<>());
+			aPositions.put(start, new IdentityHashMap<>());
 		}
 		if (!aPositions.get(start).containsKey(end))
 		{
@@ -87,7 +87,7 @@ public class StateDiagramEdgeLayouter implements EdgeLayouter
 					NodeViewerRegistry.getBounds(pEdge.getStart()).getY());
 			Point2D point2 = new Point2D(NodeViewerRegistry.getBounds(pEdge.getStart()).getMaxX(), 
 					NodeViewerRegistry.getBounds(pEdge.getStart()).getY() + SELF_EDGE_OFFSET);
-			return new EdgePath(position, Conversions.toPoint(point1), Conversions.toPoint(point2));
+			return new StateDiagramEdgePath(position, Conversions.toPoint(point1), Conversions.toPoint(point2));
 		}
 		else
 		{
@@ -95,7 +95,7 @@ public class StateDiagramEdgeLayouter implements EdgeLayouter
 					NodeViewerRegistry.getBounds(pEdge.getStart()).getY() + SELF_EDGE_OFFSET);
 			Point2D point2 = new Point2D(NodeViewerRegistry.getBounds(pEdge.getStart()).getX() + SELF_EDGE_OFFSET, 
 					NodeViewerRegistry.getBounds(pEdge.getStart()).getY());
-			return new EdgePath(position, Conversions.toPoint(point1), Conversions.toPoint(point2));
+			return new StateDiagramEdgePath(position, Conversions.toPoint(point1), Conversions.toPoint(point2));
 		}
 	}
 	
@@ -113,7 +113,7 @@ public class StateDiagramEdgeLayouter implements EdgeLayouter
 		}
 		Direction d1 = Direction.fromLine(startCenter, endCenter).rotatedBy(-turn);
 		Direction d2 = Direction.fromLine(endCenter, startCenter).rotatedBy(turn);
-		return new EdgePath(position, NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), d1), 
+		return new StateDiagramEdgePath(position, NodeViewerRegistry.getConnectionPoints(pEdge.getStart(), d1), 
 				NodeViewerRegistry.getConnectionPoints(pEdge.getEnd(), d2));
 	}
 	
