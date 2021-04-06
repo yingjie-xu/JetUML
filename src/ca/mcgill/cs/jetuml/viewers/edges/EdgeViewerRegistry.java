@@ -95,6 +95,12 @@ public final class EdgeViewerRegistry
 		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint);
 	}
 	
+	/**
+   	 * @param pEdge the edge to test
+   	 * @param pPoint the point to test
+   	 * @param pEdgePath The edge path to draw
+   	 * @return true if this element contains aPoint
+   	 */
 	public static boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath)
 	{
 		return INSTANCE.viewerFor(pEdge).contains(pEdge, pPoint, pEdgePath);
@@ -156,6 +162,11 @@ public final class EdgeViewerRegistry
    		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics);
    	}
    	
+   	/**
+   	 * @param pEdge The target edge
+   	 * @param pGraphics pGraphics the graphics context
+   	 * @param pEdgePath The edge path to draw
+   	 */
    	public static void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath)
    	{
    		INSTANCE.viewerFor(pEdge).drawSelectionHandles(pEdge, pGraphics, pEdgePath);
@@ -173,6 +184,11 @@ public final class EdgeViewerRegistry
 		return INSTANCE.viewerFor(pEdge).getBounds(pEdge);
 	}
 	
+	/**
+	 * @param pEdge The edge whose bounds we wish to compute.
+	 * @param pEdgePath The edge path to draw
+	 * @return the bounding rectangle
+	 */
 	public static Rectangle getBounds(Edge pEdge, EdgePath pEdgePath)
 	{
 		return INSTANCE.viewerFor(pEdge).getBounds(pEdge, pEdgePath);

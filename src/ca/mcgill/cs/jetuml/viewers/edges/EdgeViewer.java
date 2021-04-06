@@ -43,6 +43,11 @@ public interface EdgeViewer
    	 */
 	Rectangle getBounds(Edge pEdge);
 	
+	/**
+	 * @param pEdge The edge whose bounds we wish to compute.
+	 * @param pEdgePath The edge path to draw
+	 * @return the bounding rectangle
+	 */
 	Rectangle getBounds(Edge pEdge, EdgePath pEdgePath);
 	
 	/**
@@ -78,6 +83,11 @@ public interface EdgeViewer
 	 */
    	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics);
    	
+   	/**
+   	 * @param pEdge The target edge
+   	 * @param pGraphics pGraphics the graphics context
+   	 * @param pEdgePath The edge path to draw
+   	 */
    	void drawSelectionHandles(Edge pEdge, GraphicsContext pGraphics, EdgePath pEdgePath);
    	
    	/**
@@ -88,6 +98,12 @@ public interface EdgeViewer
      */
    	boolean contains(Edge pEdge, Point pPoint);
    	
+   	/**
+   	 * @param pEdge the edge to test
+   	 * @param pPoint the point to test
+   	 * @param pEdgePath The edge path to draw
+   	 * @return true if this element contains aPoint
+   	 */
    	boolean contains(Edge pEdge, Point pPoint, EdgePath pEdgePath);
    	
    	/**
